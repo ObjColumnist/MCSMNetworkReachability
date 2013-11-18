@@ -24,9 +24,9 @@
 @implementation MCSMNetworkReachability{
     
     dispatch_queue_t _dispatchQueue;
-    
-	BOOL _isLocalWiFiNetworkReachabilityRef;
-	SCNetworkReachabilityRef _networkReachabilityRef;
+
+    BOOL _isLocalWiFiNetworkReachabilityRef;
+    SCNetworkReachabilityRef _networkReachabilityRef;
     void (^_statusHandler)(MCSMNetworkReachabilityStatus, BOOL);
 }
 
@@ -35,12 +35,12 @@ static void MCSMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkR
     @autoreleasepool {
         
         MCSMNetworkReachability *networkReachabilityListener = (__bridge MCSMNetworkReachability *)info;
-        
+
         if(networkReachabilityListener.statusHandler != NULL)
         {
             networkReachabilityListener.statusHandler([networkReachabilityListener networkReachabilityStatus],[networkReachabilityListener isConnectionRequired]);
         }
-	}
+    }
 }
 
 + (instancetype)networkReachabilityWithHostName:(NSString *)hostName{
@@ -64,7 +64,7 @@ static void MCSMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkR
     if((self = [super init])){
         NSString *dispatchQueueLabel = [NSString stringWithFormat:@"com.squarebracketsoftware.mcsmnetworkreachability.%p",self];
         _dispatchQueue = dispatch_queue_create([dispatchQueueLabel UTF8String], 0);
-	}
+    }
 	return self;
 }
 
@@ -100,32 +100,32 @@ static void MCSMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkR
                 _hostAddress = CFRetain(hostAddress);
             }
         }
-	}
-	return self;
+    }
+    return self;
 }
 
 - (instancetype)initForInternetConnection{
     
-	struct sockaddr_in zeroAddress;
-	bzero(&zeroAddress, sizeof(zeroAddress));
-	zeroAddress.sin_len = sizeof(zeroAddress);
-	zeroAddress.sin_family = AF_INET;
-	return [self initWithAddress:&zeroAddress];
+    struct sockaddr_in zeroAddress;
+    bzero(&zeroAddress, sizeof(zeroAddress));
+    zeroAddress.sin_len = sizeof(zeroAddress);
+    zeroAddress.sin_family = AF_INET;
+    return [self initWithAddress:&zeroAddress];
 }
 
 - (instancetype)initForLocalWiFi{
     
-	struct sockaddr_in localWifiAddress;
-	bzero(&localWifiAddress, sizeof(localWifiAddress));
-	localWifiAddress.sin_len = sizeof(localWifiAddress);
-	localWifiAddress.sin_family = AF_INET;
-	// IN_LINKLOCALNETNUM is defined in <netinet/in.h> as 169.254.0.0
-	localWifiAddress.sin_addr.s_addr = htonl(IN_LINKLOCALNETNUM);
-	if((self = [self initWithAddress:&localWifiAddress])){
+    struct sockaddr_in localWifiAddress;
+    bzero(&localWifiAddress, sizeof(localWifiAddress));
+    localWifiAddress.sin_len = sizeof(localWifiAddress);
+    localWifiAddress.sin_family = AF_INET;
+    // IN_LINKLOCALNETNUM is defined in <netinet/in.h> as 169.254.0.0
+    localWifiAddress.sin_addr.s_addr = htonl(IN_LINKLOCALNETNUM);
+    if((self = [self initWithAddress:&localWifiAddress])){
         _isLocalWiFiNetworkReachabilityRef = YES;
     }
 
-	return self;
+    return self;
 }
 
 - (void)dealloc{
@@ -135,10 +135,10 @@ static void MCSMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkR
     _dispatchQueue = NULL;
     
     if(_networkReachabilityRef != NULL)
-	{
-		CFRelease(_networkReachabilityRef), _networkReachabilityRef = NULL;
-	}
-    
+    {
+        CFRelease(_networkReachabilityRef), _networkReachabilityRef = NULL;
+    }
+        
     if(_hostAddress != NULL)
     {
         CFRelease(_hostAddress), _hostAddress = NULL;
@@ -164,7 +164,7 @@ static void MCSMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkR
 
 - (MCSMNetworkReachabilityStatus)networkReachabilityStatus{
     
-	MCSMNetworkReachabilityStatus networkReachabilityStatus = MCSMNetworkReachabilityStatusUnknown;
+    MCSMNetworkReachabilityStatus networkReachabilityStatus = MCSMNetworkReachabilityStatusUnknown;
     
     if(_networkReachabilityRef != NULL)
     {
@@ -185,18 +185,18 @@ static void MCSMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkR
         }
     }
     
-	return networkReachabilityStatus;
+    return networkReachabilityStatus;
 }
 
 - (BOOL)isConnectionRequired{
     
-	SCNetworkReachabilityFlags networkReachabilityFlags;
-	
+    SCNetworkReachabilityFlags networkReachabilityFlags;
+
     if (SCNetworkReachabilityGetFlags(_networkReachabilityRef, &networkReachabilityFlags))
-	{
-		return (networkReachabilityFlags & kSCNetworkReachabilityFlagsConnectionRequired);
-	}
-	
+    {
+        return (networkReachabilityFlags & kSCNetworkReachabilityFlagsConnectionRequired);
+    }
+
     return NO;
 }
 
@@ -205,7 +205,7 @@ static void MCSMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkR
 
 - (BOOL)startMonitoring{
     
-	BOOL started = NO;
+    BOOL started = NO;
     
     if(!self.monitoring)
     {
@@ -225,7 +225,7 @@ static void MCSMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkR
         }
     }
     
-	return started;
+    return started;
 }
 
 - (BOOL)stopMonitoring{
@@ -256,47 +256,47 @@ static void MCSMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkR
 
 - (MCSMNetworkReachabilityStatus)localWiFiStatusForNetworkReachabilityFlags:(SCNetworkReachabilityFlags)networkReachabilityFlags{
     
-	MCSMNetworkReachabilityStatus networkReachabilityStatus = MCSMNetworkReachabilityStatusNotReachable;
-	
+    MCSMNetworkReachabilityStatus networkReachabilityStatus = MCSMNetworkReachabilityStatusNotReachable;
+
     if((networkReachabilityFlags & kSCNetworkReachabilityFlagsReachable) && (networkReachabilityFlags & kSCNetworkReachabilityFlagsIsDirect))
-	{
-		networkReachabilityStatus = MCSMNetworkReachabilityStatusReachableViaWiFi;
+    {
+        networkReachabilityStatus = MCSMNetworkReachabilityStatusReachableViaWiFi;
     }
-    
-	return networkReachabilityStatus;
+
+    return networkReachabilityStatus;
 }
 
 - (MCSMNetworkReachabilityStatus)networkStatusForNetworkReachabilityFlags:(SCNetworkReachabilityFlags)networkReachabilityFlags{
     
-	if ((networkReachabilityFlags & kSCNetworkReachabilityFlagsReachable) == 0)
-	{
-		return MCSMNetworkReachabilityStatusNotReachable;
-	}
+    if ((networkReachabilityFlags & kSCNetworkReachabilityFlagsReachable) == 0)
+    {
+        return MCSMNetworkReachabilityStatusNotReachable;
+    }
 
-	MCSMNetworkReachabilityStatus networkReachabilityStatus = MCSMNetworkReachabilityStatusNotReachable;
-	
-	if ((networkReachabilityFlags & kSCNetworkReachabilityFlagsConnectionRequired) == 0)
-	{
-		networkReachabilityStatus = MCSMNetworkReachabilityStatusReachableViaWiFi;
-	}
-	
-	if ((((networkReachabilityFlags & kSCNetworkReachabilityFlagsConnectionOnDemand ) != 0) ||
-		(networkReachabilityFlags & kSCNetworkReachabilityFlagsConnectionOnTraffic) != 0))
-	{
-			if ((networkReachabilityFlags & kSCNetworkReachabilityFlagsInterventionRequired) == 0)
-			{
-				networkReachabilityStatus = MCSMNetworkReachabilityStatusReachableViaWiFi;
-			}
-		}
+    MCSMNetworkReachabilityStatus networkReachabilityStatus = MCSMNetworkReachabilityStatusNotReachable;
+
+    if ((networkReachabilityFlags & kSCNetworkReachabilityFlagsConnectionRequired) == 0)
+    {
+        networkReachabilityStatus = MCSMNetworkReachabilityStatusReachableViaWiFi;
+    }
+
+    if ((((networkReachabilityFlags & kSCNetworkReachabilityFlagsConnectionOnDemand ) != 0) ||
+        (networkReachabilityFlags & kSCNetworkReachabilityFlagsConnectionOnTraffic) != 0))
+    {
+            if ((networkReachabilityFlags & kSCNetworkReachabilityFlagsInterventionRequired) == 0)
+            {
+                networkReachabilityStatus = MCSMNetworkReachabilityStatusReachableViaWiFi;
+            }
+        }
 #if (TARGET_OS_EMBEDDED || TARGET_OS_IPHONE)
-	
-	if ((networkReachabilityFlags & kSCNetworkReachabilityFlagsIsWWAN) == kSCNetworkReachabilityFlagsIsWWAN)
-	{
-		networkReachabilityStatus = MCSMNetworkReachabilityStatusReachableViaWWAN;
-	}
-    
+
+    if ((networkReachabilityFlags & kSCNetworkReachabilityFlagsIsWWAN) == kSCNetworkReachabilityFlagsIsWWAN)
+    {
+        networkReachabilityStatus = MCSMNetworkReachabilityStatusReachableViaWWAN;
+    }
+
 #endif
-	return networkReachabilityStatus;
+    return networkReachabilityStatus;
 }
 
 @end

@@ -12,9 +12,9 @@
 
 typedef enum MCSMNetworkReachabilityStatus : NSUInteger{
     MCSMNetworkReachabilityStatusUnknown, 
-	MCSMNetworkReachabilityStatusNotReachable,
-	MCSMNetworkReachabilityStatusReachableViaWiFi,
-	MCSMNetworkReachabilityStatusReachableViaWWAN
+    MCSMNetworkReachabilityStatusNotReachable,
+    MCSMNetworkReachabilityStatusReachableViaWiFi,
+    MCSMNetworkReachabilityStatusReachableViaWWAN
 } MCSMNetworkReachabilityStatus;
 
 typedef void (^MCSMNetworkReachabilityStatusHandler)(MCSMNetworkReachabilityStatus networkReachabilityStatus, BOOL connectionRequired);
