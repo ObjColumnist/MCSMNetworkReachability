@@ -10,12 +10,12 @@
 @import SystemConfiguration;
 #import <netinet/in.h>
 
-typedef enum MCSMNetworkReachabilityStatus : NSUInteger{
+typedef NS_ENUM(NSUInteger, MCSMNetworkReachabilityStatus){
     MCSMNetworkReachabilityStatusUnknown, 
     MCSMNetworkReachabilityStatusNotReachable,
     MCSMNetworkReachabilityStatusReachableViaWiFi,
     MCSMNetworkReachabilityStatusReachableViaWWAN
-} MCSMNetworkReachabilityStatus;
+};
 
 typedef void (^MCSMNetworkReachabilityStatusHandler)(MCSMNetworkReachabilityStatus networkReachabilityStatus, BOOL connectionRequired);
 

@@ -130,6 +130,8 @@ static void MCSMReachabilityCallback(SCNetworkReachabilityRef target, SCNetworkR
 
 - (void)dealloc{
     
+    [self stopMonitoring];
+    
     _statusHandler = nil;
     
     _dispatchQueue = NULL;
